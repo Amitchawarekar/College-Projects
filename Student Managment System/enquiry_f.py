@@ -2,8 +2,6 @@ import pymysql
 from tkinter import *
 from tkinter import ttk, messagebox
 from tkcalendar import DateEntry
-
-
 from register_f import RegisterClass
 
 
@@ -11,7 +9,7 @@ class EnquiryClass:
     def __init__(self, root):
         self.root = root
         self.root.title("Student Management System")
-        self.root.geometry("1240x480+0+130")
+        self.root.geometry("1240x480+0+150")
         self.root.config(bg="white")
         self.root.focus_force()
 
@@ -30,7 +28,7 @@ class EnquiryClass:
         self.var_contact1=StringVar()
         self.var_contact2=StringVar()
         self.var_followup=StringVar()
-        self.var_city=StringVar()
+        self.var_email=StringVar()
         # =========Widgets ===========
         lbl_Date = Label(self.root, text="Date", font=("goudy old style", 18, "bold"), bg="white").place(x=10, y=60)
         lbl_name = Label(self.root, text="Name", font=("goudy old style", 18, "bold"), bg="white").place(x=10, y=100)
@@ -39,7 +37,7 @@ class EnquiryClass:
         lbl_contact1 = Label(self.root, text="Contact 1", font=("goudy old style", 18, "bold"), bg="white").place(x=10,y=220)
         lbl_contact2 = Label(self.root, text="Contact 2", font=("goudy old style", 18, "bold"), bg="white").place(x=10,y=260)
         lbl_followup = Label(self.root, text="Followup", font=("goudy old style", 18, "bold"), bg="white").place(x=10,y=300)
-        lbl_city = Label(self.root, text="City", font=("goudy old style", 18, "bold"), bg="white").place(x=10,y=340)
+        lbl_email = Label(self.root, text="Email-ID", font=("goudy old style", 18, "bold"), bg="white").place(x=10,y=340)
         lbl_address = Label(self.root, text="Address", font=("goudy old style", 18, "bold"), bg="white").place(x=10,y=380)
 
 
@@ -60,7 +58,7 @@ class EnquiryClass:
                              bg="light yellow").place(x=140, y=260, width=200)
         txt_followup =Entry(self.root, textvariable=self.var_followup, font=("goudy old style", 15, "bold"),
                              bg="light yellow").place(x=140, y=300, width=200)
-        txt_city=Entry(self.root, textvariable=self.var_city, font=("goudy old style", 15, "bold"),
+        txt_email=Entry(self.root, textvariable=self.var_email, font=("goudy old style", 15, "bold"),
                              bg="light yellow").place(x=140, y=340, width=200)
         self.txt_Address = Text(self.root, width=28, height=2, font=("", 10), bg="light yellow")
         self.txt_Address.place(x=140, y=380)
@@ -99,7 +97,7 @@ class EnquiryClass:
         style.theme_use('clam')
         style.configure('Treeview',background='white',font=('Arial',12),foreground = 'black',rowheight=28,fieldbackground='white' )
         style.map('Treeview',background=[('selected','green')])
-        self.EnquiryTable = ttk.Treeview(self.E_frame, columns=('date','name','course','coursefees','contact1','contact2','followup','city','address'),
+        self.EnquiryTable = ttk.Treeview(self.E_frame, columns=('date','name','course','coursefees','contact1','contact2','followup','email','address'),
                                         xscrollcommand=scroll_x.set, yscrollcommand=scroll_y.set)
         scroll_x.pack(side=BOTTOM, fill=X)
         scroll_y.pack(side=RIGHT, fill=Y)
@@ -114,7 +112,7 @@ class EnquiryClass:
         self.EnquiryTable.heading("contact2", text="Contact2")
         self.EnquiryTable.heading("contact2", text="Contact2")
         self.EnquiryTable.heading("followup", text="Followup")
-        self.EnquiryTable.heading("city", text="City")
+        self.EnquiryTable.heading("email", text="EmailID")
         self.EnquiryTable.heading("address", text="Address")
         self.EnquiryTable['show'] = "headings"
         self.EnquiryTable.column("date", width=150)
@@ -124,7 +122,7 @@ class EnquiryClass:
         self.EnquiryTable.column("contact1", width=150)
         self.EnquiryTable.column("contact2", width=150)
         self.EnquiryTable.column("followup", width=150)
-        self.EnquiryTable.column("city", width=150)
+        self.EnquiryTable.column("email", width=150)
         self.EnquiryTable.column("address", width=150)
         self.EnquiryTable.pack(fill=BOTH, expand=1)
         self.EnquiryTable.bind('<ButtonRelease-1>',self.get_data)
@@ -145,7 +143,7 @@ class EnquiryClass:
         self.var_contact1.set(row[4]),
         self.var_contact2.set(row[5]),
         self.var_followup.set(row[6]),
-        self.var_city.set(row[7]),
+        self.var_email.set(row[7]),
         self.txt_Address.delete("1.0", END)
         self.txt_Address.insert(END,row[8])
 
@@ -162,7 +160,7 @@ class EnquiryClass:
                     messagebox.showerror("Error", "Name is already present", parent=self.root)
                 else:
                     cur.execute(
-                        "insert into enquiry_student(date,name,course,coursefees,contact1,contact2,followup,city,address) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                        "insert into enquiry_student(date,name,course,coursefees,contact1,contact2,followup,email,address) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                         (
                             self.var_date.get(),
                             self.var_ename.get(),
@@ -171,7 +169,7 @@ class EnquiryClass:
                             self.var_contact1.get(),
                             self.var_contact2.get(),
                             self.var_followup.get(),
-                            self.var_city.get(),
+                            self.var_email.get(),
                             self.txt_Address.get("1.0", END)
                         ))
                     con.commit()
@@ -226,7 +224,7 @@ class EnquiryClass:
         self.var_contact1.set("")
         self.var_contact2.set("")
         self.var_followup.set("")
-        self.var_city.set("")
+        self.var_email.set("")
         self.txt_Address.delete("1.0", END)
         self.var_Search.set("")
 
