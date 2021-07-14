@@ -1,20 +1,21 @@
 import pymysql
 from tkinter import *
 from tkinter import ttk, messagebox
-import sqlite3
 from PIL import Image, ImageTk
 import os
 import tempfile
-
+import smtplib
+import credentials as cr
+from tkcalendar import DateEntry
 
 class RegisterClass:
     def __init__(self, root):
         self.root = root
         self.root.title("Student Management System")
-        self.root.geometry("1240x480+0+130")
+        self.root.geometry("1240x480+0+150")
         self.root.config(bg="white")
         self.root.focus_force()
-
+        self.chk_print = 0
         # ========Title ==============#
         title = Label(self.root, text="Student Registration Form", font=("goudy old style", 20, "bold"), bg="#033054",
                       fg="white").place(x=10, y=15, width=1220, height=35)
@@ -33,7 +34,7 @@ class RegisterClass:
         self.var_date_ap = StringVar()
         self.var_balance_amount = StringVar()
         self.var_dob = StringVar()
-        self.var_city = StringVar()
+        self.var_email = StringVar()
 
         # =========Widgets ===========
         lbl_Regid = Label(self.root, text="Reg_ID", font=("goudy old style", 17, "bold"), bg="white").place(x=10, y=60)
@@ -46,7 +47,7 @@ class RegisterClass:
                                                                                                                   y=180)
         lbl_contact2 = Label(self.root, text="Contact 2", font=("goudy old style", 17, "bold"), bg="white").place(x=370,
                                                                                                                   y=180)
-        lbl_city = Label(self.root, text="City", font=("goudy old style", 17, "bold"), bg="white").place(x=10, y=220)
+        lbl_email = Label(self.root, text="Email-ID", font=("goudy old style", 17, "bold"), bg="white").place(x=10, y=220)
         lbl_dob = Label(self.root, text="D.O.B", font=("goudy old style", 17, "bold"), bg="white").place(x=370, y=220)
 
         lbl_course = Label(self.root, text="Course", font=("goudy old style", 17, "bold"), bg="white").place(x=10,
@@ -74,7 +75,7 @@ class RegisterClass:
         self.txt_regid = Entry(self.root, textvariable=self.var_regid, font=("goudy old style", 15, "bold"),
                                bg="light yellow")
         self.txt_regid.place(x=150, y=60, width=200)
-        txt_date = Entry(self.root, textvariable=self.var_date, font=("goudy old style", 15, "bold"),
+        txt_date = DateEntry(self.root, textvariable=self.var_date, font=("goudy old style", 15, "bold"),
                          bg="light yellow").place(x=150, y=100, width=200)
         self.txt_batch = ttk.Combobox(self.root, textvariable=self.var_batch,
                                       values=("Select", "January", "February", "March", "April", "May", "June", "July",
@@ -97,9 +98,9 @@ class RegisterClass:
                              bg="light yellow").place(x=150, y=180, width=200)
         txt_contact2 = Entry(self.root, textvariable=self.var_contact2, font=("goudy old style", 15, "bold"),
                              bg="light yellow").place(x=482, y=180, width=200)
-        txt_city = Entry(self.root, textvariable=self.var_city, font=("goudy old style", 15, "bold"),
+        txt_email = Entry(self.root, textvariable=self.var_email, font=("goudy old style", 15, "bold"),
                          bg="light yellow").place(x=150, y=220, width=200)
-        txt_dob = Entry(self.root, textvariable=self.var_dob, font=("goudy old style", 15, "bold"),
+        txt_dob = DateEntry(self.root, textvariable=self.var_dob, font=("goudy old style", 15, "bold"),
                         bg="light yellow").place(x=482, y=220, width=200)
 
         self.txt_course = ttk.Combobox(self.root, textvariable=self.var_course, values=self.course_list,
@@ -111,7 +112,7 @@ class RegisterClass:
                                bg="light yellow").place(x=482, y=260, width=200)
         txt_amount_paid = Entry(self.root, textvariable=self.var_amountpaid, font=("goudy old style", 15, "bold"),
                                 bg="light yellow").place(x=150, y=300, width=200)
-        txt_date_ap = Entry(self.root, textvariable=self.var_date_ap, font=("goudy old style", 15, "bold"),
+        txt_date_ap = DateEntry(self.root, textvariable=self.var_date_ap, font=("goudy old style", 15, "bold"),
                             bg="light yellow").place(x=482, y=300, width=200)
         txt_balance = Entry(self.root, textvariable=self.var_balance_amount, font=("goudy old style", 15, "bold"),
                             bg="light yellow").place(x=150, y=340, width=200)
@@ -156,8 +157,8 @@ class RegisterClass:
         self.btn_R_table.place(x=1000, y=50, width=130, height=25)
         btn_X = Button(self.root, text="X", font=("goudy old style", 18, "bold"), bg="white", bd=1, fg="red",
                        cursor="hand2", command=self.blank_frame).place(x=1150, y=50, width=30, height=25)
-        self.btn_print.config(state=DISABLED)
-
+        #self.btn_print.config(state=DISABLED)
+        self.btn_save.config(state=DISABLED)
         # ========Apllication Form Frame==================================================
 
         A_frame = LabelFrame(self.root, text='Application Form', font=("times new roman", 15), bg="white")
@@ -174,7 +175,7 @@ class RegisterClass:
              Gender                    :- ___________
              Contact 1                 :- ___________
              Contact 2                 :- ___________
-             City                         :- ___________
+             EmailID                   :- ___________
              D.O.B                      :- DD-MM-YYYY
              Course                     :- ___________
              Course Fee              :- Rs.___________
@@ -229,7 +230,7 @@ class RegisterClass:
                         fieldbackground='white')
         style.map('Treeview', background=[('selected', 'green')])
         self.RegisterTable = ttk.Treeview(self.D_frame, columns=(
-            'regid', 'date', 'batch', 'name', 'gender', 'contact1', 'contact2', 'city', 'course', 'dob', 'coursefees',
+            'regid', 'date', 'batch', 'name', 'gender', 'contact1', 'contact2', 'email', 'course', 'dob', 'coursefees',
             'amountpaid', 'date_ap',
             'balance', 'address', 'applicationform'),
                                           xscrollcommand=scroll_x.set, yscrollcommand=scroll_y.set)
@@ -245,7 +246,7 @@ class RegisterClass:
         self.RegisterTable.heading("gender", text="Gender")
         self.RegisterTable.heading("contact1", text="Contact1")
         self.RegisterTable.heading("contact2", text="Contact2")
-        self.RegisterTable.heading("city", text="City")
+        self.RegisterTable.heading("email", text="Email-ID")
         self.RegisterTable.heading("dob", text="D.O.B")
         self.RegisterTable.heading("course", text="Course")
         self.RegisterTable.heading("coursefees", text="Course fee")
@@ -263,7 +264,7 @@ class RegisterClass:
         self.RegisterTable.column("gender", width=150)
         self.RegisterTable.column("contact1", width=150)
         self.RegisterTable.column("contact2", width=150)
-        self.RegisterTable.column("city", width=150)
+        self.RegisterTable.column("email", width=150)
         self.RegisterTable.column("dob", width=150)
         self.RegisterTable.column("course", width=150)
         self.RegisterTable.column("coursefees", width=150)
@@ -306,7 +307,7 @@ class RegisterClass:
         scroll_x = Scrollbar(self.F_frame, orient=HORIZONTAL)
         scroll_y = Scrollbar(self.F_frame, orient=VERTICAL)
         self.EnquiryTable = ttk.Treeview(self.F_frame, columns=(
-            'date', 'name', 'course', 'coursefees', 'contact1', 'contact2', 'followup', 'city', 'address'),
+            'date', 'name', 'course', 'coursefees', 'contact1', 'contact2', 'followup', 'email', 'address'),
                                          xscrollcommand=scroll_x.set, yscrollcommand=scroll_y.set)
         scroll_x.pack(side=BOTTOM, fill=X)
         scroll_y.pack(side=RIGHT, fill=Y)
@@ -321,7 +322,7 @@ class RegisterClass:
         self.EnquiryTable.heading("contact2", text="Contact2")
         self.EnquiryTable.heading("contact2", text="Contact2")
         self.EnquiryTable.heading("followup", text="Followup")
-        self.EnquiryTable.heading("city", text="City")
+        self.EnquiryTable.heading("email", text="Email")
         self.EnquiryTable.heading("address", text="Address")
         self.EnquiryTable['show'] = "headings"
         self.EnquiryTable.column("date", width=150)
@@ -331,7 +332,7 @@ class RegisterClass:
         self.EnquiryTable.column("contact1", width=150)
         self.EnquiryTable.column("contact2", width=150)
         self.EnquiryTable.column("followup", width=150)
-        self.EnquiryTable.column("city", width=150)
+        self.EnquiryTable.column("email", width=150)
         self.EnquiryTable.column("address", width=150)
         self.EnquiryTable.pack(fill=BOTH, expand=1)
         self.EnquiryTable.bind('<ButtonRelease-1>', self.get_e_data)
@@ -340,6 +341,8 @@ class RegisterClass:
     # ==================================================================
     def Prewiew(self):
         self.btn_print.config(state=NORMAL)
+        self.btn_save.config(state=NORMAL)
+
         A_frame = LabelFrame(self.root, text='Application Form', font=("times new roman", 15), bg="white")
         A_frame.place(x=730, y=80, width=470, height=389)
         new_sample = f'''\t           Manjiri Computers,
@@ -354,7 +357,7 @@ class RegisterClass:
                Gender                    :- {self.var_gender.get()}
                Contact 1                 :- {self.var_contact1.get()}
                Contact 2                 :- {self.var_contact2.get()}
-               City                         :- {self.var_city.get()}
+               EmailID                   :- {self.var_email.get()}
                D.O.B                      :- {self.var_dob.get()}
                Course                     :- {self.var_course.get()}
                Course Fee              :- Rs.{self.var_coursefees.get()}
@@ -375,8 +378,11 @@ class RegisterClass:
         scroll_y.config(command=self.txt_Application_form.yview)
         self.txt_Application_form.delete('1.0', END)
         self.txt_Application_form.insert(END, new_sample)
+        self.chk_print = 1
 
     def blank_frame(self):
+        self.btn_save.config(state=DISABLED)
+        self.btn_print.config(state=DISABLED)
         A_frame = LabelFrame(self.root, text='Application Form', font=("times new roman", 15), bg="white")
         A_frame.place(x=730, y=80, width=470, height=389)
         self.sample = f'''\t           Manjiri Computers,
@@ -391,7 +397,7 @@ class RegisterClass:
                Gender                    :- ____________
                Contact 1                 :- ____________
                Contact 2                 :-____________
-               City                         :-____________
+               EmailID                   :- ___________
                D.O.B                      :- DD-MM-YYYY
                Course                     :- ____________
                Course Fee              :- Rs.____________
@@ -431,7 +437,7 @@ class RegisterClass:
         self.var_gender.set(row[4]),
         self.var_contact1.set(row[5]),
         self.var_contact2.set(row[6]),
-        self.var_city.set(row[7]),
+        self.var_email.set(row[7]),
         self.var_dob.set(row[8]),
         self.var_course.set(row[9]),
         self.var_coursefees.set(row[10]),
@@ -452,7 +458,7 @@ class RegisterClass:
         self.var_coursefees.set(row[3]),
         self.var_contact1.set(row[4]),
         self.var_contact2.set(row[5]),
-        self.var_city.set(row[7]),
+        self.var_email.set(row[7]),
         self.txt_Address.delete("1.0", END)
         self.txt_Address.insert(END, row[8])
 
@@ -460,7 +466,7 @@ class RegisterClass:
         con = pymysql.connect(host="localhost", user="root", password="", database="srms")
         cur = con.cursor()
         try:
-            if self.var_rname.get() == "" or self.var_date.get() == "" or self.var_batch.get() == "" or self.var_gender.get() == "" or self.var_contact1.get() == "" or self.var_contact2.get() == "" or self.var_city.get() == "" or self.var_dob.get() == "":
+            if self.var_rname.get() == "" or self.var_date.get() == "" or self.var_batch.get() == "" or self.var_gender.get() == "" or self.var_contact1.get() == "" or self.var_contact2.get() == ""  or self.var_dob.get() == "":
                 messagebox.showerror("Error", "All Fields are Required", parent=self.root)
             elif self.var_coursefees.get() == "" or self.var_amountpaid.get() == "" or self.var_date_ap.get() == "" or self.var_balance_amount.get() == "" or self.txt_Address.get(
                     '1.0', END) == "":
@@ -477,7 +483,7 @@ class RegisterClass:
                 else:
 
                     cur.execute(
-                        "insert into register_student(date,batch,name,gender,contact1,contact2,city,dob,course,coursefees,amountpaid,date_ap,balance,address,applicationform) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                        "insert into register_student(date,batch,name,gender,contact1,contact2,email,dob,course,coursefees,amountpaid,date_ap,balance,address,applicationform) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                         (
                             self.var_date.get(),
                             self.var_batch.get(),
@@ -485,7 +491,7 @@ class RegisterClass:
                             self.var_gender.get(),
                             self.var_contact1.get(),
                             self.var_contact2.get(),
-                            self.var_city.get(),
+                            self.var_email.get(),
                             self.var_dob.get(),
                             self.var_course.get(),
                             self.var_coursefees.get(),
@@ -501,11 +507,33 @@ class RegisterClass:
                     con.commit()
 
                     messagebox.showinfo("Success", "Student Registered successfully", parent=self.root)
+                    self.send_mail()
                     self.show()
 
 
         except Exception as ex:
             messagebox.showerror("Error", f"Error due to {str(ex)}", parent=self.root)
+
+    def send_mail(self):
+
+
+        rx = {self.var_email.get()}
+        sub = 'Registration Confirmation'
+        msg = f'''
+        Hello {self.var_rname.get()},you have been Successfully Registered to our institute for {self.var_course.get()} course.
+        Thank you for joining with us.
+        With Regards.'''
+
+        mailer = smtplib.SMTP('smtp.gmail.com', 587)
+        mailer.ehlo()
+        mailer.starttls()
+        mailer.login(cr.auth['user_name'], cr.auth['password'])
+
+        email_body = '\r\n'.join(['To:%s' % rx, 'From:%s' % (cr.auth['user_name']),
+                                  'Subject:%s' % sub, '', msg])
+
+        mailer.sendmail(cr.auth['user_name'], rx, email_body)
+        # print('Email sent')
 
     def update(self):
 
@@ -522,7 +550,7 @@ class RegisterClass:
                 else:
 
                     cur.execute(
-                        "update register_student set date=%s,batch=%s,name=%s,gender=%s,contact1=%s,contact2=%s,city=%s,dob=%s,course=%s,coursefees=%s,amountpaid=%s,date_ap=%s,balance=%s,address=%s where regid=%s",
+                        "update register_student set date=%s,batch=%s,name=%s,gender=%s,contact1=%s,contact2=%s,email=%s,dob=%s,course=%s,coursefees=%s,amountpaid=%s,date_ap=%s,balance=%s,address=%s where regid=%s",
                         (
                             self.var_date.get(),
                             self.var_batch.get(),
@@ -530,7 +558,7 @@ class RegisterClass:
                             self.var_gender.get(),
                             self.var_contact1.get(),
                             self.var_contact2.get(),
-                            self.var_city.get(),
+                            self.var_email.get(),
                             self.var_dob.get(),
                             self.var_course.get(),
                             self.var_coursefees.get(),
@@ -585,7 +613,7 @@ class RegisterClass:
         self.var_gender.set("Select")
         self.var_contact1.set("")
         self.var_contact2.set("")
-        self.var_city.set("")
+        self.var_email.set("")
         self.var_dob.set("")
         self.var_course.set("Select")
         self.var_coursefees.set("")
@@ -596,8 +624,7 @@ class RegisterClass:
         self.txt_regid.config(state=NORMAL)
         self.txt_Application_form.delete('1.0', END)
         self.txt_Application_form.insert(END, self.sample)
-        #self.var_Search.set("")
-
+        
     def show(self):
         con = pymysql.connect(host="localhost", user="root", password="", database="srms")
         cur = con.cursor()
@@ -651,6 +678,8 @@ class RegisterClass:
 
         except Exception as ex:
             messagebox.showerror("Error", f"Error due to {str(ex)}")
+        self.var_Search.set('')
+
 
     def e_search(self):
         if self.txt_search.get() == "":
@@ -668,6 +697,8 @@ class RegisterClass:
 
         except Exception as ex:
             messagebox.showerror("Error", f"Error due to {str(ex)}")
+        self.var_Search.set('')
+
 
     def save(self):
         self.btn_print.config(state=DISABLED)
@@ -678,9 +709,14 @@ class RegisterClass:
         self.clear()
 
     def print(self):
-        file_ = tempfile.mktemp('.txt')
-        open(file_, 'w').write(self.txt_Application_form.get("1.0", END))
-        os.startfile(file_, 'print')
+        if self.chk_print ==1:
+            messagebox.showinfo('Print','Please wait while printing',parent=self.root)
+            file_ = tempfile.mktemp('.txt')
+            open(file_, 'w').write(self.txt_Application_form.get("1.0", END))
+            os.startfile(file_, 'print')
+        else:
+            messagebox.showerror('Print','Please preview application form,to print Application Form',parent=self.root)
+
 
     def check(self):
         fees = float(self.var_coursefees.get())
@@ -693,3 +729,4 @@ if __name__ == "__main__":
     root = Tk()
     obj1 = RegisterClass(root)
     root.mainloop()
+
