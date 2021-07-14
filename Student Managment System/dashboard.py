@@ -9,12 +9,13 @@ from recipt import Recipt
 from tkinter import messagebox
 import pymysql
 import pandas as pd
+import time
 import os
 class SMS:
     def __init__(self,root):
         self.root =root
         self.root.title("Student Management System")
-        self.root.geometry("1320x690+0+0")
+        self.root.geometry("1320x720+0+0")
         self.root.overrideredirect(1)
         self.root.config(bg="white")
 
@@ -26,10 +27,11 @@ class SMS:
 
         #========Title ==============#
         title= Label(self.root,text="Student Management System",padx=10,compound=LEFT,image=self.logo_dash1,font=("goudy old style",20,"bold"),bg="#722891",fg="white").place(x=0,y=0,relwidth=1,height=50)
-
+        self.lbl_date_time = Label(self.root,text='Welcome to Student Management System \t Date : \t\t Time:',font=("goudy old style", 15, "bold"),bg='grey',fg='yellow')
+        self.lbl_date_time.place(x=0,y=53,height=30,width=1320)
         #==========Menu==============
         M_Frame= LabelFrame(self.root,text="Menus",font=("times new roman",15),bg="white")
-        M_Frame.place(x=10,y=60,width=1240,height=70)
+        M_Frame.place(x=10,y=85,width=1240,height=65)
 
         btn_course= Button(M_Frame,text="Course",font=("goudy old style",15,"bold"),command=self.add_course,bg="#451F55",fg="white",cursor="hand2").place(x=10,y=5,width=160,height=30)
 
@@ -43,50 +45,56 @@ class SMS:
 
         #=====Content Window ================
         self.bg_img = Image.open("image/student-management-system.jpg")
-        resized1 = self.bg_img.resize((1100,270), Image.ANTIALIAS)
+        resized1 = self.bg_img.resize((1100,260), Image.ANTIALIAS)
         self.bg_img1 = ImageTk.PhotoImage(resized1)
 
-        self.lbl_bg=Label(self.root,image= self.bg_img1).place(x=100,y=165,width=1100,height=270)
+        self.lbl_bg=Label(self.root,image= self.bg_img1).place(x=100,y=185,width=1100,height=260)
 
         #==== Update details ============
-        lbl_course=Label(self.root,text="Courses",font=("goudy old style",20),bd=7,relief=RIDGE,bg="#34134C",fg="white").place(x=10,y=440,width=220,height=40)
+        lbl_course=Label(self.root,text="Courses",font=("goudy old style",20),bd=7,relief=RIDGE,bg="#34134C",fg="white").place(x=10,y=450,width=220,height=40)
         self.lbl_course=Label(self.root,text="Total Courses\n[0]",font=("goudy old style",20),bd=10,relief=RIDGE,bg="#e43b06",fg="white")
-        self.lbl_course.place(x=10,y=480,width=220,height=140)
+        self.lbl_course.place(x=10,y=490,width=220,height=140)
 
-        lbl_student = Label(self.root, text="Students", font=("goudy old style", 20), bd=7, relief=RIDGE, bg="#34134C",fg="white").place(x=260, y=440,width=220,height=40)
+        lbl_student = Label(self.root, text="Students", font=("goudy old style", 20), bd=7, relief=RIDGE, bg="#34134C",fg="white").place(x=260, y=450,width=220,height=40)
         self.lbl_student = Label(self.root, text="Total Students\n[0]", font=("goudy old style", 20), bd=10, relief=RIDGE,bg="#038074", fg="white")
-        self.lbl_student.place(x=260, y=480, width=220, height=140)
+        self.lbl_student.place(x=260, y=490, width=220, height=140)
 
-        lbl_result = Label(self.root, text="Result", font=("goudy old style", 20), bd=7, relief=RIDGE, bg="#34134C",fg="white").place(x=510, y=440,width=220,height=40)
+        lbl_result = Label(self.root, text="Result", font=("goudy old style", 20), bd=7, relief=RIDGE, bg="#34134C",fg="white").place(x=510, y=450,width=220,height=40)
         self.lbl_result = Label(self.root, text="Total Results\n[0]", font=("goudy old style", 20), bd=10, relief=RIDGE,bg="#0675ad", fg="white")
-        self.lbl_result.place(x=510, y=480, width=220, height=140)
+        self.lbl_result.place(x=510, y=490, width=220, height=140)
 
-        lbl_recipt = Label(self.root, text="Recipt", font=("goudy old style", 20), bd=7, relief=RIDGE,bg="#34134C", fg="white").place(x=760, y=440, width=220, height=40)
+        lbl_recipt = Label(self.root, text="Recipt", font=("goudy old style", 20), bd=7, relief=RIDGE,bg="#34134C", fg="white").place(x=760, y=450, width=220, height=40)
         self.lbl_recipt = Label(self.root, text="Total Recipt\n[0]", font=("goudy old style", 20), bd=10, relief=RIDGE,
                                 bg="green", fg="white")
-        self.lbl_recipt.place(x=760, y=480, width=220, height=140)
+        self.lbl_recipt.place(x=760, y=490, width=220, height=140)
 
 
 
-        lbl_developed_by = Label(self.root, text="Developed By", font=("goudy old style", 20), bd=7, relief=RIDGE,bg="#34134C", fg="white").place(x=1010, y=440, width=220, height=40)
+        lbl_developed_by = Label(self.root, text="Developed By", font=("goudy old style", 20), bd=7, relief=RIDGE,bg="#34134C", fg="white").place(x=1010, y=450, width=220, height=40)
         self.lbl_developed_by = Label(self.root,text="Amit Anand Chawarekar \n Email-\namit.chawarekar@gmail.com \n 9503016634",
                                       font=("goudy old style", 13, "bold"), bd=5, relief=RIDGE, bg="crimson",
                                       fg="white")
-        self.lbl_developed_by.place(x=1010, y=480, width=220, height=140)
+        self.lbl_developed_by.place(x=1010, y=490, width=220, height=140)
         # ========footer ==============#
         footer = Label(self.root, text="SMS-Student Management System\nContact us for any Technical Issue:950xxxxx34",font=("goudy old style", 12), bg="#262626",fg="white").pack(side=BOTTOM,fill=X)
         self.update_details()
+        self.update_date_time()
         # ==========Form frame =======================
 
     def frame(self):
         f=Frame(self.root,bg="white")
-        f.place(x=490, y=132, width=300, height=28)
+        f.place(x=490, y=157, width=300, height=28)
         btn_result = Button(f, text="Add Result", font=("goudy old style", 15, "bold"), bg="#451F55", fg="white",
                             cursor="hand2", command=self.add_result).place(x=10, y=0, width=120, height=30)
         btn_view_result = Button(f, text="View Result", font=("goudy old style", 15, "bold"), bg="#451F55",
                                  fg="white", cursor="hand2", command=self.view_result).place(x=150, y=0, width=120,
                                                                                              height=30)
 
+    def update_date_time(self):
+        time_= time.strftime('%I:%M:%S')
+        date_ = time.strftime("%d-%m-%Y")
+        self.lbl_date_time.config(text=f"Welcome to Student Management System  \t\t\t\tDate: {str(date_)}\t\t Time: {str(time_)}")
+        self.lbl_date_time.after(200,self.update_date_time)
     def update_details(self):
         con = pymysql.connect(host="localhost", user="root", password="", database="srms")
         cur = con.cursor()
@@ -127,13 +135,13 @@ class SMS:
 
     def add_result(self):
         frame = Frame(self.root, bg='white')
-        frame.place(x=490, y=132, width=300, height=28)
+        frame.place(x=490, y=157, width=300, height=28)
         self.new_win = Toplevel(self.root)
         self.new_obj = Resultclass(self.new_win)
 
     def view_result(self):
         frame= Frame(self.root,bg='white')
-        frame.place(x=490, y=132, width=300, height=28)
+        frame.place(x=490, y=157, width=300, height=28)
 
         self.new_win = Toplevel(self.root)
         self.new_obj = Viewresult(self.new_win)
