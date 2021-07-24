@@ -1,0 +1,26 @@
+	           Manjiri Computers,
+                Indar Complex,Bhadgaon 9421513829
+---------------------------------------------------------------
+                          Application Form
+---------------------------------------------------------------
+               Registration ID        :- 
+               Date                        :- 7/12/21
+               Batch                       :- July
+               Name of Student      :- Durvesh
+               Gender                    :- Male
+               Contact 1                 :- 1234567880
+               Contact 2                 :- 1234567890
+               EmailID                   :- durveshvpatil01@gmail.com
+               D.O.B                      :- 7/15/14
+               Course                     :- python
+               Course Fee              :- Rs.5000
+               Amount Paid            :- Rs.3000
+               Date of Payment       :- 7/13/21
+               Balance Amount       :- Rs.2000.0
+               Address                    :- Mumbai
+
+
+
+    _____________                 _____________
+    Administrative Sign            Student Sign
+    

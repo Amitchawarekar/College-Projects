@@ -1,0 +1,23 @@
+	              Manjiri Computers,
+              Indar Complex,Bhadgaon 9421513829
+---------------------------------------------------------------
+                              Application Form
+---------------------------------------------------------------
+             Registration ID       :- ______
+             Date                        :- DD-MM-YYYY
+             Batch                       :- ____________
+             Name of Student      :- 
+             Gender                    :- ___________
+             Contact 1                 :- ___________
+             Contact 2                 :- ___________
+             City                         :- ___________
+             D.O.B                      :- DD-MM-YYYY
+             Course                     :- ___________
+             Course Fee              :- Rs.___________
+             Amount Paid            :- Rs.___________
+             Date of Payment       :- DD-MM-YYYY
+             Balance Amount       :- Rs.___________
+             Address                    :- ___________
+         _________________              _______________
+          Administrative Sign                   Student Sign
+        

@@ -1,0 +1,27 @@
+	           Manjiri Computers,
+                Indar Complex,Bhadgaon 9421513829
+---------------------------------------------------------------
+                          Application Form
+---------------------------------------------------------------
+               Registration ID        :- 14
+               Date                        :- 2021-06-06
+               Batch                       :- February
+               Name of Student      :- Mitali Chawarekar
+               Gender                    :- Female
+               Contact 1                 :- 9421516670
+               Contact 2                 :- 7083837896
+               City                         :- Bhadgaon
+
+               D.O.B                      :- 01-01-2001
+               Course                     :- MS-CIT
+               Course Fee              :- Rs.5000
+               Amount Paid            :- Rs.3000
+               Date of Payment       :- 02-01-2001
+               Balance Amount       :- Rs.2000.0
+               Address                    :- Pune
+
+
+
+    _____________                 _____________
+    Administrative Sign            Student Sign
+    
